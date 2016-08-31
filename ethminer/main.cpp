@@ -52,8 +52,11 @@ void version()
 
 int main(int argc, char** argv)
 {
-	cout << "Ethminer " << ETH_PROJECT_VERSION << endl;
+	cout << "" << endl;
 	cout << "=====================================================================" << endl;
+	cout << "=   Ethminer " << ETH_PROJECT_VERSION << endl;
+	cout << "=====================================================================" << endl;
+	cout << "" << endl;
 	
 	MinerCLI m(MinerCLI::OperationMode::Farm);
 

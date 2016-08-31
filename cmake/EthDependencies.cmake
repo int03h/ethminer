@@ -3,6 +3,9 @@
 
 # by defining this variable, cmake will look for dependencies first in our own repository before looking in system paths like /usr/local/ ...
 # this must be set to point to the same directory as $ETH_DEPENDENCY_INSTALL_DIR in /extdep directory
+#
+#  GUI REMOVED - ALL QT etc dependencies removed
+#
 string(TOLOWER ${CMAKE_SYSTEM_NAME} _system_name)
 if (CMAKE_CL_64)
 	set (ETH_DEPENDENCY_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extdep/install/${_system_name}/x64")
@@ -19,11 +22,6 @@ include_directories(${ETH_GENERATED_DIR})
 # custom cmake scripts
 set(ETH_SCRIPTS_DIR ${CMAKE_CURRENT_LIST_DIR}/scripts)
 
-# Qt5 requires opengl
-# TODO use proper version of windows SDK (32 vs 64)
-# TODO make it possible to use older versions of windows SDK (7.0+ should also work)
-# TODO it windows SDK is NOT FOUND, throw ERROR
-# from https://github.com/rpavlik/cmake-modules/blob/master/FindWindowsSDK.cmake
 if (WIN32)
 	find_package(WINDOWSSDK REQUIRED)
 	message(" - WindowsSDK dirs: ${WINDOWSSDK_DIRS}")
@@ -90,11 +88,11 @@ endif()
 
 # TODO gmp package does not yet check for correct version number
 # TODO it is also not required in msvc build
-find_package (Gmp 6.0.0)
-if (GMP_FOUND)
-	message(" - gmp header: ${GMP_INCLUDE_DIRS}")
-	message(" - gmp lib   : ${GMP_LIBRARIES}")
-endif()
+#find_package (Gmp 6.0.0)
+#if (GMP_FOUND)
+#	message(" - gmp header: ${GMP_INCLUDE_DIRS}")
+#	message(" - gmp lib   : ${GMP_LIBRARIES}")
+#endif()
 
 # curl is only requried for tests
 # TODO specify min curl version, on windows we are currently using 7.29
@@ -116,14 +114,6 @@ endif()
 # find location of jsonrpcstub
 find_program(ETH_JSON_RPC_STUB jsonrpcstub)
 message(" - jsonrpcstub location    : ${ETH_JSON_RPC_STUB}")
-
-# do not compile GUI
-if (GUI)
-
-# we need json rpc to build alethzero
-	if (NOT JSON_RPC_CPP_FOUND)
-		message (FATAL_ERROR "JSONRPC is required for GUI client")
-	endif()
 
 # use multithreaded boost libraries, with -mt suffix
 set(Boost_USE_MULTITHREADED ON)

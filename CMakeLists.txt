@@ -1,8 +1,8 @@
 # cmake global
 cmake_minimum_required(VERSION 2.8.12)
 
-set(PROJECT_VERSION "0.9.41")
-set(GENOIL_VERSION "1.1.7")
+set(PROJECT_VERSION "0.0.1")
+set(SUB_VERSION "1")
 if (${CMAKE_VERSION} VERSION_GREATER 3.0)
 	cmake_policy(SET CMP0042 OLD) 	# fix MACOSX_RPATH
 	cmake_policy(SET CMP0048 NEW) 	# allow VERSION argument in project()
@@ -30,13 +30,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 ######################################################################################################
 
-# note: The value "default" which provides the defaults is just a fake value
-# which lets us keep the default values of all build options and is set at
-# the beginning of this file.
-
-#defaults:
-set(D_CMAKE_BUILD_TYPE "Release")
-set(D_GUI ON)
+#defaults (don't fiddle here)  use -DBUNDLE=miner or -DBUNDLE=cudaminer on the cmake commandline
+#GUI is set explicitly off because it's not buildable
+#
+set(D_CMAKE_BUILD_TYPE "miner")
+set(D_GUI OFF)
 set(D_ETHASHCL ON)
 set(D_ETHASHCUDA OFF)
 set(D_JSONRPC ON)
@@ -45,57 +43,27 @@ set(D_PARANOID OFF)
 set(D_PROFILING OFF)
 set(D_OLYMPIC OFF)
 set(D_MINER ON)
-set(D_ETHSTRATUM OFF)
+set(D_ETHSTRATUM ON)
 
-if (BUNDLE STREQUAL "minimal")
-	set(D_GUI OFF)
-elseif (BUNDLE STREQUAL "full")
-	set(D_GUI ON)
-elseif (BUNDLE STREQUAL "cli")
-	set(D_GUI OFF)
-elseif (BUNDLE STREQUAL "core")
-	set(D_GUI ON)
-elseif (BUNDLE STREQUAL "user")
-	set(D_GUI ON)
-elseif (BUNDLE STREQUAL "wallet")
-	set(D_GUI OFF)
-	set(D_MINER OFF)
-	set(D_ETHASHCL OFF)
-	set(D_JSONRPC OFF)
-elseif (BUNDLE STREQUAL "miner")
-	set(D_GUI OFF)
+if (BUNDLE STREQUAL "miner")
 	set(D_MINER ON)
 	set(D_ETHASHCL ON)
 	set(D_JSONRPC ON)
 	set(D_ETHSTRATUM ON)
 elseif (BUNDLE STREQUAL "cudaminer")
-	set(D_GUI OFF)
 	set(D_MINER ON)
 	set(D_ETHASHCL ON)
 	set(D_ETHASHCUDA ON)
 	set(D_JSONRPC ON)
 	set(D_ETHSTRATUM ON)
-elseif (BUNDLE STREQUAL "release")      # release builds
-	set(D_GUI ON)
-	set(D_ETHASHCL ON)
-	set(D_JSONRPC ON)
-	set(D_CMAKE_BUILD_TYPE "Release")
 endif ()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
-	set(CMAKE_BUILD_TYPE ${D_CMAKE_BUILD_TYPE})
+	set(CMAKE_BUILD_TYPE "miner")
 endif ()
 
 # propagates CMake configuration options to the compiler
 function(configureProject)
-	if (PARANOID)
-		add_definitions(-DETH_PARANOIA)
-	endif ()
-
-	if (VMTRACE)
-		add_definitions(-DETH_VMTRACE)
-	endif ()
-
 	if (ETHASHCL)
 		add_definitions(-DETH_ETHASHCL)
 	endif()
@@ -108,26 +76,8 @@ function(configureProject)
 		add_definitions(-DETH_STRATUM)
 	endif()
 
-	if (FATDB)
-		add_definitions(-DETH_FATDB)
-	endif()
-
-	if (GUI)
-		add_definitions(-DETH_GUI)
-	endif()
-
-	if (CPUID_FOUND)
-		add_definitions(-DETH_CPUID)
-	endif()
-
 	if (CURL_FOUND)
 		add_definitions(-DETH_CURL)
-	endif()
-
-	if (OLYMPIC)
-		add_definitions(-DETH_OLYMPIC)
-	else()
-		add_definitions(-DETH_FRONTIER)
 	endif()
 
 	add_definitions(-DETH_TRUE)
@@ -172,7 +122,7 @@ function(createBuildInfo)
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		COMMAND ${CMAKE_COMMAND} -DETH_SOURCE_DIR="${CMAKE_SOURCE_DIR}" -DETH_DST_DIR="${CMAKE_BINARY_DIR}"
 			-DETH_BUILD_TYPE="${_cmake_build_type}" -DETH_BUILD_PLATFORM="${ETH_BUILD_PLATFORM}"
-			-DPROJECT_VERSION="${PROJECT_VERSION}" -DGENOIL_VERSION="${GENOIL_VERSION}" -DETH_FATDB="${FATDB}"
+			-DPROJECT_VERSION="${PROJECT_VERSION}" -DSUB_VERSION="${SUB_VERSION}" -DETH_FATDB="${FATDB}"
 			-P "${ETH_SCRIPTS_DIR}/buildinfo.cmake"
 		)
 	include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -201,12 +151,6 @@ endif ()
 # Force chromium.
 set (ETH_HAVE_WEBENGINE 1)
 
-# Backwards compatibility
-if (HEADLESS)
-	message("*** WARNING: -DHEADLESS=1 option is DEPRECATED! Use -DBUNDLE=minimal or -DGUI=0")
-	set(GUI OFF)
-endif ()
-
 macro(eth_format_option O)
 	if (${${O}})
 		set(${O} ON)
@@ -229,10 +173,6 @@ eth_format_option(ETHASHCUDA)
 eth_format_option(OLYMPIC)
 eth_format_option(ETHSTRATUM)
 
-if (GUI)
-	set(JSONRPC ON)
-endif()
-
 # Default CMAKE_BUILD_TYPE accordingly.
 set(CMAKE_BUILD_TYPE CACHE STRING ${D_CMAKE_BUILD_TYPE})
 
@@ -248,22 +188,12 @@ include(EthDependencies)
 configureProject()
 
 message("------------------------------------------------------------------------")
-message("--                  CMake Version                            ${CMAKE_VERSION}")
-message("-- CMAKE_BUILD_TYPE Build type                               ${CMAKE_BUILD_TYPE}")
-message("-- TARGET_PLATFORM  Target platform                          ${TARGET_PLATFORM}")
 message("-- BUNDLE           Build bundle                             ${BUNDLE}")
-message("--------------------------------------------------------------- features")
+message("------------------------------------------------------------------------")
+message("--                  CMake Version                            ${CMAKE_VERSION}")
+message("-- TARGET_PLATFORM  Target platform                          ${TARGET_PLATFORM}")
 message("--                  Chromium support                         ${ETH_HAVE_WEBENGINE}")
-message("--                  Hardware identification support          ${CPUID_FOUND}")
 message("--                  HTTP Request support                     ${CURL_FOUND}")
-message("-- VMTRACE          VM execution tracing                     ${VMTRACE}")
-message("-- PROFILING        Profiling support                        ${PROFILING}")
-message("-- FATDB            Full database exploring                  ${FATDB}")
-message("-- JSONRPC          JSON-RPC support                         ${JSONRPC}")
-message("-- OLYMPIC          Default to the Olympic network           ${OLYMPIC}")
-message("------------------------------------------------------------- components")
-message("-- MINER            Build miner                              ${MINER}")
-message("-- GUI              Build GUI components                     ${GUI}")
 message("-- ETHASHCL         Build OpenCL components                  ${ETHASHCL}")
 message("-- ETHASHCUDA       Build CUDA components                    ${ETHASHCUDA}")
 message("-- ETHSTRATUM       Build Stratum components                 ${ETHSTRATUM}")

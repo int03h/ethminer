@@ -491,13 +491,13 @@ public:
 				EthashCUDAMiner::listDevices();
 #endif
 			if (m_minerType == MinerType::CPU)
-				cout << "--list-devices should be combined with GPU mining flag (-G for OpenCL or -U for CUDA)" << endl;
+				cout << "--list-devices (Use -G (opencl) or -U (cuda) flag to select GPU platform)" << endl;
 			exit(0);
 		}
 
 		if (m_minerType == MinerType::CPU)
 		{
-			cout << "CPU mining is no longer supported in this miner. Use -G (opencl) or -U (cuda) flag to select GPU platform." << endl;
+			cout << "Use -G (opencl) or -U (cuda) flag to select GPU platform." << endl;
 			exit(0);
 		}
 		else if (m_minerType == MinerType::CL || m_minerType == MinerType::Mixed)
