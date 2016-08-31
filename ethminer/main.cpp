@@ -5,24 +5,8 @@
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-
-	cpp-ethereum is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with cpp-ethereum.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** @file main.cpp
- * @author Gav Wood <i@gavwood.com>
- * @date 2014
- * Ethereum client.
- */
 
-// Solves the problem of including windows.h before including winsock.h
-// as detailed here:
-// http://stackoverflow.com/questions/1372480/c-redefinition-header-files-winsock2-h
 #if defined(_WIN32)
 #define _WINSOCKAPI_
 #include <windows.h>
@@ -68,14 +52,9 @@ void version()
 
 int main(int argc, char** argv)
 {
-	cout << "Genoil's ethminer " << ETH_PROJECT_VERSION << endl;
+	cout << "Ethminer " << ETH_PROJECT_VERSION << endl;
 	cout << "=====================================================================" << endl;
-	cout << "Forked from github.com/ethereum/cpp-ethereum" << endl;
-	cout << "CUDA kernel ported from Tim Hughes' OpenCL kernel" << endl;
-	cout << "With contributions from nicehash, nerdralph, RoBiK and sp_ " << endl << endl;
-	cout << "Please consider a donation to:" << endl;
-	cout << "ETH: 0xeb9310b185455f863f526dab3d245809f6854b4d" << endl << endl;
-
+	
 	MinerCLI m(MinerCLI::OperationMode::Farm);
 
 	for (int i = 1; i < argc; ++i)
