@@ -14,4 +14,6 @@ don't install :
 WILY DEPS
 apt-get install libjsoncpp-dev libjsonrpccpp-tools  libjsonrpccpp-dev libjsonrpccpp-stub0 build-essential git cmake libboost-all-dev  libleveldb-dev libminiupnpc-dev libreadline-dev libncurses5-dev libcurl4-openssl-dev libcrypto++-dev libmicrohttpd-dev libargtable2-dev libedit-dev libv8-dev zlib1g-dev
 
+build-essential git python curl scons cmake libboost-all-dev automake unzip libgmp-dev libgmp3-dev libtool libleveldb-dev yasm libminiupnpc-dev libreadline-dev libncurses5-dev libcurl4-openssl-dev wget libjsoncpp-dev libargtable2-dev libmicrohttpd-dev libedit-dev mesa-common-dev ocl-icd-libopencl1 opencl-headers libgoogle-perftools-dev ocl-icd-dev libv8-dev binfmt-support libffi-dev libobjc-4.9-dev libobjc4 libjsonrpccpp-dev libjsonrpccpp-tools
+
 Install the AMD SDK into /opt it will pick it up 
